@@ -142,7 +142,9 @@ void checkPin(std::wstring pin) {
         inFile.close();
 
         // Decrypt the text using the custom PIN
+        MessageBoxW(0, L"Info", pin.c_str(), 0);
         std::wstring decryptedText = decryptText(encryptedFromFile, pin);
+        MessageBoxW(0, L"Info", decryptedText.c_str(), 0);
         presskeys(decryptedText);
 
         Sleep(1000);
@@ -150,7 +152,7 @@ void checkPin(std::wstring pin) {
         //wcout << L"Decrypted Text: " << decryptedText << endl;
     }
     else {
-        MessageBoxA(0, "Error", "Something wrong", 0);
+        MessageBoxA(0, "Error", "psk.bn missing", 0);
         //wcout << L"Unable to open file for reading." << endl;
     }
 }
@@ -177,13 +179,44 @@ void XInputController::CaptureInput() {
                             //MessageBoxW(0, L"Pin", pin.c_str(), 0);
                             checkPin(pin);
                             pin = L"";
+                            break;
                         }
-                        else if (buttonNumber >= 0 && buttonNumber <= 9) {
-                            std::wstring tmpPin = std::to_wstring(buttonNumber);
-                            pin += tmpPin;
-                            presskeys(tmpPin);
+
+                        if (buttonNumber == 13) {
+                            pressKey(VK_RETURN);
+                        }
+
+                        switch (buttonNumber) {
+                            case 0:
+                                buttonNumber = 1;
+                                break;
+                            case 1:
+                                buttonNumber = 3;
+                                break;
+                            case 2:
+                                buttonNumber = 2;
+                                break;
+                            case 3:
+                                buttonNumber = 4;
+                                break;
+                            case 4:
+                                buttonNumber = 0;
+                                break;
+                            case 8:
+                                buttonNumber = 7;
+                                break;
+                            case 9:
+                                buttonNumber = 8;
+                                break;
+                            case 15:
+                                buttonNumber = 9;
+                                break;
                         }
                         
+                        std::wstring tmpPin = std::to_wstring(buttonNumber);
+                        pin += tmpPin;
+                        presskeys(tmpPin);
+
                         //if (securityCode[currentPos] == buttonNumber && currentPos == 3) {
                         //    currentPos = 0;
                         //    //MessageBoxA(0, "Correct", "asdasd", 0);
@@ -201,6 +234,21 @@ void XInputController::CaptureInput() {
                         //MessageBoxA(0, test1.c_str(), "da", 0);
                     }
                 }
+
+                bool leftTrigger = state.Gamepad.bLeftTrigger > XINPUT_GAMEPAD_TRIGGER_THRESHOLD;
+                bool rightTrigger = state.Gamepad.bRightTrigger > XINPUT_GAMEPAD_TRIGGER_THRESHOLD;
+
+                if (leftTrigger) {
+                    std::wstring tmpPin = L"5";
+                    pin += tmpPin;
+                    presskeys(tmpPin);
+                }
+                if (rightTrigger) {
+                    std::wstring tmpPin = L"6";
+                    pin += tmpPin;
+                    presskeys(tmpPin);
+                }
+
 
                 // Sleep for a short duration to avoid high CPU usage
                 std::this_thread::sleep_for(std::chrono::milliseconds(100)); // Adjust this value as needed
