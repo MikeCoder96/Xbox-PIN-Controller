@@ -30,3 +30,7 @@
 *.exe
 *.out
 *.app
+/.vs/Xbox Pin Controller
+/PasswordEncrypt/x64/Debug
+/x64/Debug
+/XboxPINController/x64/Debug
