@@ -101,21 +101,6 @@ void presskeys(const std::wstring& str)
     SendInput(in.size(), &in[0], sizeof(INPUT));
 }
 
-
-// Function to encrypt text using a custom PIN
-std::wstring encryptText(const std::wstring& text, const std::wstring& pin) {
-    std::wstring encryptedText = text;
-    for (size_t i = 0; i < text.length(); ++i) {
-        encryptedText[i] = text[i] ^ pin[i % pin.length()];
-    }
-    return encryptedText;
-}
-
-// Function to decrypt text using a custom PIN
-std::wstring decryptText(const std::wstring& encryptedText, const std::wstring& pin) {
-    return encryptText(encryptedText, pin); // XOR operation is its own inverse
-}
-
 void pressKey(WORD key) {
     INPUT input;
     input.type = INPUT_KEYBOARD;
@@ -130,39 +115,9 @@ void pressKey(WORD key) {
     SendInput(1, &input, sizeof(INPUT));
 }
 
-void checkPin(std::wstring pin) {
-    // Read the encrypted text from the file
-    pressKey(VK_TAB);
-    Sleep(500);
-    std::wifstream inFile("psk.bn");
-    if (inFile.is_open()) {
-        std::wstringstream buffer;
-        buffer << inFile.rdbuf();
-        std::wstring encryptedFromFile = buffer.str();
-        inFile.close();
-
-        // Decrypt the text using the custom PIN
-        MessageBoxW(0, L"Info", pin.c_str(), 0);
-        std::wstring decryptedText = decryptText(encryptedFromFile, pin);
-        MessageBoxW(0, L"Info", decryptedText.c_str(), 0);
-        presskeys(decryptedText);
-
-        Sleep(1000);
-        pressKey(VK_RETURN);
-        //wcout << L"Decrypted Text: " << decryptedText << endl;
-    }
-    else {
-        MessageBoxA(0, "Error", "psk.bn missing", 0);
-        //wcout << L"Unable to open file for reading." << endl;
-    }
-}
-
 // Function to capture input continuously
 void XInputController::CaptureInput() {
     std::wstring pin = L"";
-    //const WORD securityCode[4] = { 0, 0, 0, 0 };
-    //const int codeLength = 4;
-    //int currentPos = 0;
 
     while (capturing_) {
         if (IsControllerConnected(userIndex_)) {
@@ -177,13 +132,14 @@ void XInputController::CaptureInput() {
 
                         if (buttonNumber == 12) {
                             //MessageBoxW(0, L"Pin", pin.c_str(), 0);
-                            checkPin(pin);
-                            pin = L"";
+                            pressKey(VK_RETURN);
+                            Sleep(500);
                             break;
                         }
 
                         if (buttonNumber == 13) {
-                            pressKey(VK_RETURN);
+                            pressKey(VK_BACK);
+                            break;
                         }
 
                         switch (buttonNumber) {
@@ -216,22 +172,7 @@ void XInputController::CaptureInput() {
                         std::wstring tmpPin = std::to_wstring(buttonNumber);
                         pin += tmpPin;
                         presskeys(tmpPin);
-
-                        //if (securityCode[currentPos] == buttonNumber && currentPos == 3) {
-                        //    currentPos = 0;
-                        //    //MessageBoxA(0, "Correct", "asdasd", 0);
-                        //    typeString();
-                        //}
-                        //else if (securityCode[currentPos] == buttonNumber) {
-                        //    currentPos++;
-                        //}
-                        //else if (securityCode[currentPos] != buttonNumber) {
-                        //    MessageBoxA(0, "Wrong", "asdasd", 0);
-                        //    currentPos = 0;
-                        //}
-                            
-                        //std::string test1 = std::to_string(buttonNumber);
-                        //MessageBoxA(0, test1.c_str(), "da", 0);
+                        break;
                     }
                 }
 
@@ -241,12 +182,12 @@ void XInputController::CaptureInput() {
                 if (leftTrigger) {
                     std::wstring tmpPin = L"5";
                     pin += tmpPin;
-                    presskeys(tmpPin);
+                    presskeys(tmpPin);             
                 }
                 if (rightTrigger) {
                     std::wstring tmpPin = L"6";
                     pin += tmpPin;
-                    presskeys(tmpPin);
+                    presskeys(tmpPin); 
                 }
 
 
