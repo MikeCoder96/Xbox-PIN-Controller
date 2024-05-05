@@ -20,7 +20,7 @@ enum SAMPLE_FIELD_ID
 {
     SFI_TILEIMAGE         = 0,
     //SFI_LABEL             = 1,
-    //SFI_LARGE_TEXT        = 2,
+    SFI_LARGE_TEXT        = 1,
     //SFI_PIN_TEXT          = 3,
     //SFI_PASSWORD          = 4,
     //SFI_SUBMIT_BUTTON     = 5,
@@ -32,7 +32,7 @@ enum SAMPLE_FIELD_ID
     //SFI_CHECKBOX          = 10,
     //SFI_EDIT_TEXT         = 11,
     //SFI_COMBOBOX          = 12,
-    SFI_NUM_FIELDS        = 1,  // Note: if new fields are added, keep NUM_FIELDS last.  This is used as a count of the number of fields
+    SFI_NUM_FIELDS        = 2,  // Note: if new fields are added, keep NUM_FIELDS last.  This is used as a count of the number of fields
 };
 
 // The first value indicates when the tile is displayed (selected, not selected)
@@ -54,7 +54,7 @@ static const FIELD_STATE_PAIR s_rgFieldStatePairs[] =
 {
     { CPFS_DISPLAY_IN_BOTH,            CPFIS_NONE    },    // SFI_TILEIMAGE
     //{ CPFS_HIDDEN,                     CPFIS_NONE    },    // SFI_LABEL
-    //{ CPFS_DISPLAY_IN_BOTH,            CPFIS_NONE    },    // SFI_LARGE_TEXT
+    { CPFS_DISPLAY_IN_BOTH,            CPFIS_NONE    },    // SFI_LARGE_TEXT
     //{ CPFS_DISPLAY_IN_SELECTED_TILE,   CPFIS_FOCUSED },    // SFI_PIN_TEXT
     //{ CPFS_DISPLAY_IN_SELECTED_TILE,   CPFIS_NONE    },    // SFI_PASSWORD
     //{ CPFS_DISPLAY_IN_SELECTED_TILE,   CPFIS_NONE    },    // SFI_SUBMIT_BUTTON
@@ -76,7 +76,7 @@ static const CREDENTIAL_PROVIDER_FIELD_DESCRIPTOR s_rgCredProvFieldDescriptors[]
 {
     { SFI_TILEIMAGE,         CPFT_TILE_IMAGE,    L"Image",                      CPFG_CREDENTIAL_PROVIDER_LOGO  },
     //{ SFI_LABEL,             CPFT_SMALL_TEXT,    L"Tooltip",                    CPFG_CREDENTIAL_PROVIDER_LABEL },
-    //{ SFI_LARGE_TEXT,        CPFT_LARGE_TEXT,    L"Sample Credential Provider"                                 },
+    { SFI_LARGE_TEXT,        CPFT_LARGE_TEXT,    L"Sample Credential Provider"                                 },
     //{ SFI_PIN_TEXT,          CPFT_PASSWORD_TEXT, L"PIN"                                                        },
     //{ SFI_PASSWORD,          CPFT_PASSWORD_TEXT, L"Password text"                                              },
     //{ SFI_SUBMIT_BUTTON,     CPFT_SUBMIT_BUTTON, L"Submit"                                                     },

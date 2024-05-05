@@ -78,10 +78,10 @@ HRESULT CCredential::Initialize(CREDENTIAL_PROVIDER_USAGE_SCENARIO cpus,
     //{
     //    hr = SHStrDupW(L"Xbox PIN Login", &_rgFieldStrings[SFI_LABEL]);
     //}
-    //if (SUCCEEDED(hr))
-    //{
-    //    hr = SHStrDupW(L"Input yout PIN or Account Password", &_rgFieldStrings[SFI_LARGE_TEXT]);
-    //}
+    if (SUCCEEDED(hr))
+    {
+        hr = SHStrDupW(L"Use Windows Hello PIN option to login", &_rgFieldStrings[SFI_LARGE_TEXT]);
+    }
     //if (SUCCEEDED(hr))
     //{
     //    hr = SHStrDupW(L"Edit Text", &_rgFieldStrings[SFI_EDIT_TEXT]);
