@@ -1,0 +1,12 @@
+﻿  Gamepad.cpp
+C:\Users\mikel\Desktop\Projects\Xbox Input Controller\XboxPINController\Gamepad.cpp(57,13): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\mikel\Desktop\Projects\Xbox Input Controller\XboxPINController\Gamepad.cpp(101,22): warning C4267: 'argument': conversion from 'size_t' to 'UINT', possible loss of data
+     Creating library C:\Users\mikel\Desktop\Projects\Xbox Input Controller\x64\Release\XboxPINController.lib and object C:\Users\mikel\Desktop\Projects\Xbox Input Controller\x64\Release\XboxPINController.exp
+XboxPINController.exp : warning LNK4070: /OUT:SampleV2CredentialProvider.dll directive in .EXP differs from output filename 'C:\Users\mikel\Desktop\Projects\Xbox Input Controller\x64\Release\XboxPINController.dll'; ignoring directive
+  Generating code
+  2 of 467 functions ( 0.4%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    4 functions had inline decision re-evaluated but remain unchanged
+  Finished generating code
+XboxPINController.exp : warning LNK4070: /OUT:SampleV2CredentialProvider.dll directive in .EXP differs from output filename 'C:\Users\mikel\Desktop\Projects\Xbox Input Controller\x64\Release\XboxPINController.dll'; ignoring directive
+  XboxPINController.vcxproj -> C:\Users\mikel\Desktop\Projects\Xbox Input Controller\x64\Release\XboxPINController.dll

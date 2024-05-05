@@ -19,11 +19,11 @@
 enum SAMPLE_FIELD_ID
 {
     SFI_TILEIMAGE         = 0,
-    SFI_LABEL             = 1,
-    SFI_LARGE_TEXT        = 2,
-    SFI_PIN_TEXT          = 3,
-    SFI_PASSWORD          = 4,
-    SFI_SUBMIT_BUTTON     = 5,
+    //SFI_LABEL             = 1,
+    //SFI_LARGE_TEXT        = 2,
+    //SFI_PIN_TEXT          = 3,
+    //SFI_PASSWORD          = 4,
+    //SFI_SUBMIT_BUTTON     = 5,
     //SFI_LAUNCHWINDOW_LINK = 5,
     //SFI_HIDECONTROLS_LINK = 6,
     //SFI_FULLNAME_TEXT     = 7,
@@ -32,7 +32,7 @@ enum SAMPLE_FIELD_ID
     //SFI_CHECKBOX          = 10,
     //SFI_EDIT_TEXT         = 11,
     //SFI_COMBOBOX          = 12,
-    SFI_NUM_FIELDS        = 6,  // Note: if new fields are added, keep NUM_FIELDS last.  This is used as a count of the number of fields
+    SFI_NUM_FIELDS        = 1,  // Note: if new fields are added, keep NUM_FIELDS last.  This is used as a count of the number of fields
 };
 
 // The first value indicates when the tile is displayed (selected, not selected)
@@ -53,11 +53,11 @@ struct FIELD_STATE_PAIR
 static const FIELD_STATE_PAIR s_rgFieldStatePairs[] =
 {
     { CPFS_DISPLAY_IN_BOTH,            CPFIS_NONE    },    // SFI_TILEIMAGE
-    { CPFS_HIDDEN,                     CPFIS_NONE    },    // SFI_LABEL
-    { CPFS_DISPLAY_IN_BOTH,            CPFIS_NONE    },    // SFI_LARGE_TEXT
-    { CPFS_DISPLAY_IN_SELECTED_TILE,   CPFIS_FOCUSED },    // SFI_PIN_TEXT
-    { CPFS_DISPLAY_IN_SELECTED_TILE,   CPFIS_NONE    },    // SFI_PASSWORD
-    { CPFS_DISPLAY_IN_SELECTED_TILE,   CPFIS_NONE    },    // SFI_SUBMIT_BUTTON
+    //{ CPFS_HIDDEN,                     CPFIS_NONE    },    // SFI_LABEL
+    //{ CPFS_DISPLAY_IN_BOTH,            CPFIS_NONE    },    // SFI_LARGE_TEXT
+    //{ CPFS_DISPLAY_IN_SELECTED_TILE,   CPFIS_FOCUSED },    // SFI_PIN_TEXT
+    //{ CPFS_DISPLAY_IN_SELECTED_TILE,   CPFIS_NONE    },    // SFI_PASSWORD
+    //{ CPFS_DISPLAY_IN_SELECTED_TILE,   CPFIS_NONE    },    // SFI_SUBMIT_BUTTON
     //{ CPFS_DISPLAY_IN_SELECTED_TILE,   CPFIS_NONE    },    // SFI_LAUNCHWINDOW_LINK
     //{ CPFS_DISPLAY_IN_SELECTED_TILE,   CPFIS_NONE    },    // SFI_HIDECONTROLS_LINK
     //{ CPFS_DISPLAY_IN_SELECTED_TILE,   CPFIS_NONE    },    // SFI_FULLNAME_TEXT
@@ -75,11 +75,11 @@ static const FIELD_STATE_PAIR s_rgFieldStatePairs[] =
 static const CREDENTIAL_PROVIDER_FIELD_DESCRIPTOR s_rgCredProvFieldDescriptors[] =
 {
     { SFI_TILEIMAGE,         CPFT_TILE_IMAGE,    L"Image",                      CPFG_CREDENTIAL_PROVIDER_LOGO  },
-    { SFI_LABEL,             CPFT_SMALL_TEXT,    L"Tooltip",                    CPFG_CREDENTIAL_PROVIDER_LABEL },
-    { SFI_LARGE_TEXT,        CPFT_LARGE_TEXT,    L"Sample Credential Provider"                                 },
-    { SFI_PIN_TEXT,          CPFT_PASSWORD_TEXT, L"PIN"                                                        },
-    { SFI_PASSWORD,          CPFT_PASSWORD_TEXT, L"Password text"                                              },
-    { SFI_SUBMIT_BUTTON,     CPFT_SUBMIT_BUTTON, L"Submit"                                                     },
+    //{ SFI_LABEL,             CPFT_SMALL_TEXT,    L"Tooltip",                    CPFG_CREDENTIAL_PROVIDER_LABEL },
+    //{ SFI_LARGE_TEXT,        CPFT_LARGE_TEXT,    L"Sample Credential Provider"                                 },
+    //{ SFI_PIN_TEXT,          CPFT_PASSWORD_TEXT, L"PIN"                                                        },
+    //{ SFI_PASSWORD,          CPFT_PASSWORD_TEXT, L"Password text"                                              },
+    //{ SFI_SUBMIT_BUTTON,     CPFT_SUBMIT_BUTTON, L"Submit"                                                     },
     //{ SFI_LAUNCHWINDOW_LINK, CPFT_COMMAND_LINK,  L"Launch helper window"                                       },
     //{ SFI_HIDECONTROLS_LINK, CPFT_COMMAND_LINK,  L"Hide additional controls"                                   },
     //{ SFI_FULLNAME_TEXT,     CPFT_SMALL_TEXT,    L"Full name: "                                                },
