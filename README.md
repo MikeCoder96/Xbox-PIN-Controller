@@ -18,7 +18,7 @@ Follow these steps to install the Xbox-Pin-Controller:
 2. **Register the DLL**:
    - 🛠 Execute `register.reg` as an Administrator.
   
-NOTE:
+**NOTE:**
 In case the controller will control the UI in winlogon, add this key on registry:
 \HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Input\Settings\ControllerProcessor\ControllerToVKMapping 
 And add this value:
