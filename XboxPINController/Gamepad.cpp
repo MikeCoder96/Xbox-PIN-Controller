@@ -115,12 +115,102 @@ void pressKey(WORD key) {
     SendInput(1, &input, sizeof(INPUT));
 }
 
-// Function to capture input continuously
 void XInputController::CaptureInput() {
+    std::wstring pin = L"";
+    XINPUT_STATE lastState = {};
+    std::chrono::steady_clock::time_point lastInputTime = std::chrono::steady_clock::now();
+    const int repeatDelay = 300; // Milliseconds before accepting a repeated button press
+
+    while (capturing_) {
+        if (IsControllerConnected(userIndex_)) {
+            XINPUT_STATE currentState = GetControllerState(userIndex_);
+
+            auto currentTime = std::chrono::steady_clock::now();
+            int elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - lastInputTime).count();
+
+            if (currentState.dwPacketNumber != lastState.dwPacketNumber) {
+                bool inputProcessed = false;
+
+                // Process button inputs
+                for (WORD i = 0; i < 16; ++i) {
+                    bool currentButton = (currentState.Gamepad.wButtons & (1 << i)) != 0;
+                    bool lastButton = (lastState.Gamepad.wButtons & (1 << i)) != 0;
+
+                    if (currentButton && (!lastButton || elapsedTime > repeatDelay)) {
+                        int buttonNumber = i;
+                        if (buttonNumber == 12) {
+                            pressKey(VK_RETURN);
+                            Sleep(500);
+                            inputProcessed = true;
+                            break;
+                        }
+                        if (buttonNumber == 13) {
+                            pressKey(VK_BACK);
+                            inputProcessed = true;
+                            break;
+                        }
+                        switch (buttonNumber) {
+                        case 0: buttonNumber = 1; break;
+                        case 1: buttonNumber = 3; break;
+                        case 2: buttonNumber = 2; break;
+                        case 3: buttonNumber = 4; break;
+                        case 4: buttonNumber = 0; break;
+                        case 8: buttonNumber = 7; break;
+                        case 9: buttonNumber = 8; break;
+                        case 15: buttonNumber = 9; break;
+                        }
+
+                        std::wstring tmpPin = std::to_wstring(buttonNumber);
+                        pin += tmpPin;
+                        presskeys(tmpPin);
+                        inputProcessed = true;
+                        break;
+                    }
+                }
+
+                // Process trigger inputs
+                bool currentLeftTrigger = currentState.Gamepad.bLeftTrigger > XINPUT_GAMEPAD_TRIGGER_THRESHOLD;
+                bool lastLeftTrigger = lastState.Gamepad.bLeftTrigger > XINPUT_GAMEPAD_TRIGGER_THRESHOLD;
+                bool currentRightTrigger = currentState.Gamepad.bRightTrigger > XINPUT_GAMEPAD_TRIGGER_THRESHOLD;
+                bool lastRightTrigger = lastState.Gamepad.bRightTrigger > XINPUT_GAMEPAD_TRIGGER_THRESHOLD;
+
+                if (currentLeftTrigger && (!lastLeftTrigger || elapsedTime > repeatDelay)) {
+                    std::wstring tmpPin = L"5";
+                    pin += tmpPin;
+                    presskeys(tmpPin);
+                    inputProcessed = true;
+                }
+                if (currentRightTrigger && (!lastRightTrigger || elapsedTime > repeatDelay)) {
+                    std::wstring tmpPin = L"6";
+                    pin += tmpPin;
+                    presskeys(tmpPin);
+                    inputProcessed = true;
+                }
+
+                if (inputProcessed) {
+                    lastInputTime = currentTime;
+                }
+
+                lastState = currentState;
+            }
+        }
+        else {
+            // Optionally, wait for controller connection
+            std::this_thread::sleep_for(std::chrono::seconds(1));
+        }
+
+        // Sleep to avoid high CPU usage
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+    }
+}
+
+// Function to capture input continuously
+/*void XInputController::CaptureInput() {
     std::wstring pin = L"";
 
     while (capturing_) {
         if (IsControllerConnected(userIndex_)) {
+            
             XINPUT_STATE state = GetControllerState(userIndex_);
 
             // Example usage of controller state
@@ -155,7 +245,7 @@ void XInputController::CaptureInput() {
                             case 3:
                                 buttonNumber = 4;
                                 break;
-                            case 4:
+                            case 14:
                                 buttonNumber = 0;
                                 break;
                             case 8:
@@ -167,17 +257,23 @@ void XInputController::CaptureInput() {
                             case 15:
                                 buttonNumber = 9;
                                 break;
+                            default:
+                                buttonNumber = -1;
                         }
                         
-                        std::wstring tmpPin = std::to_wstring(buttonNumber);
-                        pin += tmpPin;
-                        presskeys(tmpPin);
-                        break;
+
+                        if (buttonNumber != -1)
+                        {
+                            std::wstring tmpPin = std::to_wstring(buttonNumber);
+                            pin += tmpPin;
+                            presskeys(tmpPin);
+                            break;
+                        }
                     }
                 }
 
-                bool leftTrigger = state.Gamepad.bLeftTrigger > XINPUT_GAMEPAD_TRIGGER_THRESHOLD;
-                bool rightTrigger = state.Gamepad.bRightTrigger > XINPUT_GAMEPAD_TRIGGER_THRESHOLD;
+                bool leftTrigger = state.Gamepad.bLeftTrigger > (XINPUT_GAMEPAD_TRIGGER_THRESHOLD * 2) + 10;
+                bool rightTrigger = state.Gamepad.bRightTrigger > (XINPUT_GAMEPAD_TRIGGER_THRESHOLD * 2) + 10;
 
                 if (leftTrigger) {
                     std::wstring tmpPin = L"5";
@@ -192,7 +288,8 @@ void XInputController::CaptureInput() {
 
 
                 // Sleep for a short duration to avoid high CPU usage
-                std::this_thread::sleep_for(std::chrono::milliseconds(100)); // Adjust this value as needed
+
+                std::this_thread::sleep_for(std::chrono::milliseconds(123)); // Adjust this value as needed
             }
         }
         else {
@@ -200,4 +297,4 @@ void XInputController::CaptureInput() {
             std::this_thread::sleep_for(std::chrono::seconds(1)); // Wait for 1 second before checking again
         }
     }
-}
+}*/

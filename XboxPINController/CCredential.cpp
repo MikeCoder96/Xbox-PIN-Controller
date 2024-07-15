@@ -308,6 +308,7 @@ HRESULT CCredential::GetBitmapValue(DWORD dwFieldID, _Outptr_result_nullonfailur
 HRESULT CCredential::GetSubmitButtonValue(DWORD dwFieldID, _Out_ DWORD *pdwAdjacentTo)
 {
     HRESULT hr;
+    hr = S_OK;
 
     //if (SFI_SUBMIT_BUTTON == dwFieldID)
     //{
