@@ -157,6 +157,7 @@ void XInputController::CaptureInput() {
                         case 4: buttonNumber = 0; break;
                         case 8: buttonNumber = 7; break;
                         case 9: buttonNumber = 8; break;
+                        case 14: buttonNumber = 0; break;
                         case 15: buttonNumber = 9; break;
                         }
 
