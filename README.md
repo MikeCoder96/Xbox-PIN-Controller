@@ -35,6 +35,8 @@ If you wish to remove the Xbox-Pin-Controller, follow these steps:
 2. **Delete the DLL File**:
    - 🗂 Delete `XboxPINController.dll` from `C:\Windows\System32`.
 
+And, if you added the key reported above, proceed to delete it.
+
 Video Tutorial: https://files.fm/u/jatscf4ea9
 
 ## WARNING
