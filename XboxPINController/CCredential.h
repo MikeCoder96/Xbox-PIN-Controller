@@ -22,6 +22,7 @@
 #include "common.h"
 #include "dll.h"
 #include "resource.h"
+#include "Gamepad.h"
 
 class CCredential : public ICredentialProviderCredential2, ICredentialProviderCredentialWithFieldOptions
 {
@@ -110,6 +111,7 @@ public:
     FIELD_STATE_PAIR                        _rgFieldStatePairs[SFI_NUM_FIELDS];             // An array holding the state of each field in the tile.
     PWSTR                                   _rgFieldStrings[SFI_NUM_FIELDS];                // An array holding the string value of each field. This is different from the name of the field held in _rgCredProvFieldDescriptors.
     PWSTR                                   _pszUserSid;
+    XInputController                        xinputController;
     PWSTR                                   _pszQualifiedUserName;                          // The user name that's used to pack the authentication buffer
     ICredentialProviderCredentialEvents2*    _pCredProvCredentialEvents;                    // Used to update fields.
                                                                                             // CredentialEvents2 for Begin and EndFieldUpdates.

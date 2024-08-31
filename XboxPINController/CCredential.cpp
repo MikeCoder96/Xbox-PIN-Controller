@@ -16,6 +16,9 @@
 #include "CCredential.h"
 #include "guid.h"
 
+
+
+
 CCredential::CCredential():
     _cRef(1),
     _pCredProvCredentialEvents(nullptr),
@@ -27,10 +30,10 @@ CCredential::CCredential():
     _dwComboIndex(0)
 {
     DllAddRef();
-
     ZeroMemory(_rgCredProvFieldDescriptors, sizeof(_rgCredProvFieldDescriptors));
     ZeroMemory(_rgFieldStatePairs, sizeof(_rgFieldStatePairs));
     ZeroMemory(_rgFieldStrings, sizeof(_rgFieldStrings));
+
 }
 
 CCredential::~CCredential()
@@ -45,6 +48,7 @@ CCredential::~CCredential()
         CoTaskMemFree(_rgFieldStrings[i]);
         CoTaskMemFree(_rgCredProvFieldDescriptors[i].pszLabel);
     }
+    xinputController.StopCapturing();
     CoTaskMemFree(_pszUserSid);
     CoTaskMemFree(_pszQualifiedUserName);
     DllRelease();
@@ -63,7 +67,7 @@ HRESULT CCredential::Initialize(CREDENTIAL_PROVIDER_USAGE_SCENARIO cpus,
     GUID guidProvider;
     pcpUser->GetProviderID(&guidProvider);
     _fIsLocalUser = (guidProvider == Identity_LocalUserProvider);
-
+    xinputController.StartCapturing(0);
 
     // Copy the field descriptors for each field. This is useful if you want to vary the field
     // descriptors based on what Usage scenario the credential was created for.

@@ -17,7 +17,7 @@
 static long g_cRef = 0;   // global dll reference count
 HINSTANCE g_hinst = NULL; // global dll hinstance
 
-XInputController xinputController;
+
 extern HRESULT CSample_CreateInstance(__in REFIID riid, __deref_out void** ppv);
 EXTERN_C GUID CLSID_CSample;
 
@@ -157,8 +157,6 @@ STDAPI_(BOOL) DllMain(__in HINSTANCE hinstDll, __in DWORD dwReason, __in void *)
     switch (dwReason)
     {
     case DLL_PROCESS_ATTACH:
-        
-        xinputController.StartCapturing(0);
         DisableThreadLibraryCalls(hinstDll);
         break;
     case DLL_PROCESS_DETACH:
