@@ -23,6 +23,8 @@
 #include "dll.h"
 #include "resource.h"
 #include "Gamepad.h"
+#include <gdiplus.h>
+#pragma comment(lib, "gdiplus.lib")
 
 class CCredential : public ICredentialProviderCredential2, ICredentialProviderCredentialWithFieldOptions
 {
@@ -94,6 +96,9 @@ public:
     // ICredentialProviderCredentialWithFieldOptions
     IFACEMETHODIMP GetFieldOptions(DWORD dwFieldID,
                                    _Out_ CREDENTIAL_PROVIDER_CREDENTIAL_FIELD_OPTIONS *pcpcfo);
+    HRESULT CreatePopupWindow();
+    HRESULT LoadAndDisplayImage();
+    static LRESULT CALLBACK PopupWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
   public:
     HRESULT Initialize(CREDENTIAL_PROVIDER_USAGE_SCENARIO cpus,
@@ -114,6 +119,9 @@ public:
     XInputController                        xinputController;
     PWSTR                                   _pszQualifiedUserName;                          // The user name that's used to pack the authentication buffer
     ICredentialProviderCredentialEvents2*    _pCredProvCredentialEvents;                    // Used to update fields.
+    HWND _hwndPopupWindow;
+    POINT _lastMousePos;
+    bool _isDragging;
                                                                                             // CredentialEvents2 for Begin and EndFieldUpdates.
     BOOL                                    _fChecked;                                      // Tracks the state of our checkbox.
     DWORD                                   _dwComboIndex;                                  // Tracks the current index of our combobox.

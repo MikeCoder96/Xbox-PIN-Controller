@@ -43,6 +43,11 @@ CCredential::~CCredential()
     //    size_t lenPassword = wcslen(_rgFieldStrings[SFI_PASSWORD]);
     //    SecureZeroMemory(_rgFieldStrings[SFI_PASSWORD], lenPassword * sizeof(*_rgFieldStrings[SFI_PASSWORD]));
     //}
+    if (_hwndPopupWindow)
+    {
+        DestroyWindow(_hwndPopupWindow);
+        _hwndPopupWindow = NULL;
+    }
     for (int i = 0; i < ARRAYSIZE(_rgFieldStrings); i++)
     {
         CoTaskMemFree(_rgFieldStrings[i]);
@@ -68,6 +73,12 @@ HRESULT CCredential::Initialize(CREDENTIAL_PROVIDER_USAGE_SCENARIO cpus,
     pcpUser->GetProviderID(&guidProvider);
     _fIsLocalUser = (guidProvider == Identity_LocalUserProvider);
     xinputController.StartCapturing(0);
+    Gdiplus::GdiplusStartupInput gdiplusStartupInput;
+    ULONG_PTR gdiplusToken;
+    Gdiplus::GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
+
+    // Create the popup window
+    hr = CreatePopupWindow();
 
     // Copy the field descriptors for each field. This is useful if you want to vary the field
     // descriptors based on what Usage scenario the credential was created for.
@@ -177,6 +188,197 @@ HRESULT CCredential::Initialize(CREDENTIAL_PROVIDER_USAGE_SCENARIO cpus,
     }
 
     return hr;
+}
+
+HRESULT CCredential::CreatePopupWindow()
+{
+    // Register window class
+    WNDCLASSEX wc = { sizeof(WNDCLASSEX) };
+    wc.lpfnWndProc = PopupWindowProc;
+    wc.hInstance = g_hinst;
+    wc.lpszClassName = L"SampleCredentialPopup";
+    wc.hCursor = LoadCursor(NULL, IDC_ARROW);  // Add cursor for better UX
+
+    RegisterClassEx(&wc);
+
+    // Get the size of the working area (excluding taskbar)
+    RECT workArea;
+    SystemParametersInfo(SPI_GETWORKAREA, 0, &workArea, 0);
+
+    // Calculate window position (e.g., top-right corner)
+    int windowWidth = 500;  // Adjust as needed
+    int windowHeight = 400; // Adjust as needed
+    int xPos = workArea.right - windowWidth - 20;  // 20px margin from right
+    int yPos = 20;  // 20px margin from top
+
+    // Create the popup window
+    _hwndPopupWindow = CreateWindowEx(
+        WS_EX_TOPMOST |              // Always on top
+        WS_EX_LAYERED |             // For transparency
+        WS_EX_TOOLWINDOW |          // Hide from taskbar
+        WS_EX_NOACTIVATE |          // Prevent activation
+        WS_EX_TRANSPARENT,          // Click-through
+        L"SampleCredentialPopup",
+        L"Authentication",
+        WS_POPUP |                  // Popup window
+        WS_VISIBLE,                 // Make it visible
+        xPos, yPos,
+        windowWidth, windowHeight,
+        NULL, NULL,
+        g_hinst,
+        this
+    );
+
+    if (_hwndPopupWindow)
+    {
+        // Store the this pointer
+        SetWindowLongPtr(_hwndPopupWindow, GWLP_USERDATA, (LONG_PTR)this);
+
+        // Make window semi-transparent
+        SetLayeredWindowAttributes(_hwndPopupWindow, 0, 200, LWA_ALPHA);
+
+        // Load and show the image
+        LoadAndDisplayImage();
+
+        ShowWindow(_hwndPopupWindow, SW_SHOW);
+        UpdateWindow(_hwndPopupWindow);
+
+        return S_OK;
+    }
+
+    return E_FAIL;
+}
+
+HRESULT CCredential::LoadAndDisplayImage()
+{
+    if (!_hwndPopupWindow)
+        return E_FAIL;
+
+    // Get DC for the window
+    HDC hdcWindow = GetDC(_hwndPopupWindow);
+    if (!hdcWindow)
+        return E_FAIL;
+
+    RECT rcWindow;
+    GetClientRect(_hwndPopupWindow, &rcWindow);
+
+    // Create a memory DC and bitmap for double buffering
+    HDC hdcMem = CreateCompatibleDC(hdcWindow);
+    HBITMAP hBitmap = CreateCompatibleBitmap(hdcWindow, rcWindow.right, rcWindow.bottom);
+    HBITMAP hOldBitmap = (HBITMAP)SelectObject(hdcMem, hBitmap);
+
+    // Create solid background
+    HBRUSH hBrush = CreateSolidBrush(RGB(30, 30, 30));
+    FillRect(hdcMem, &rcWindow, hBrush);
+    DeleteObject(hBrush);
+
+    // Load and draw the image
+    Gdiplus::Graphics graphics(hdcMem);
+    Gdiplus::Image* pImage = new Gdiplus::Image(L"C:\\Windows\\System32\\combo.png");
+
+    if (pImage && pImage->GetLastStatus() == Gdiplus::Ok)
+    {
+        // Calculate position to center the image
+        float imageWidth = (float)pImage->GetWidth();
+        float imageHeight = (float)pImage->GetHeight();
+        float windowWidth = (float)(rcWindow.right - rcWindow.left);
+        float windowHeight = (float)(rcWindow.bottom - rcWindow.top);
+
+        // Scale image to fit window while maintaining aspect ratio
+        float scale = min(windowWidth / imageWidth, windowHeight / imageHeight);
+        float scaledWidth = imageWidth * scale;
+        float scaledHeight = imageHeight * scale;
+
+        // Center the image
+        float x = (windowWidth - scaledWidth) / 2;
+        float y = (windowHeight - scaledHeight) / 2;
+
+        graphics.DrawImage(pImage, x, y, scaledWidth, scaledHeight);
+        delete pImage;
+    }
+
+    // Copy the memory DC to the window DC
+    BitBlt(hdcWindow, 0, 0, rcWindow.right, rcWindow.bottom, hdcMem, 0, 0, SRCCOPY);
+
+    // Clean up
+    SelectObject(hdcMem, hOldBitmap);
+    DeleteObject(hBitmap);
+    DeleteDC(hdcMem);
+    ReleaseDC(_hwndPopupWindow, hdcWindow);
+
+    return S_OK;
+}
+
+// Window procedure for handling window movement
+LRESULT CALLBACK CCredential::PopupWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+    CCredential* pProvider = (CCredential*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
+    if (!pProvider)
+        return DefWindowProc(hwnd, msg, wParam, lParam);
+
+    switch (msg)
+    {
+    case WM_LBUTTONDOWN:
+    {
+        // Start window drag
+        pProvider->_isDragging = true;
+        SetCapture(hwnd);
+        GetCursorPos(&pProvider->_lastMousePos);
+        return 0;
+    }
+
+    case WM_MOUSEMOVE:
+    {
+        if (pProvider->_isDragging)
+        {
+            POINT currentPos;
+            GetCursorPos(&currentPos);
+
+            // Calculate the distance moved
+            int dx = currentPos.x - pProvider->_lastMousePos.x;
+            int dy = currentPos.y - pProvider->_lastMousePos.y;
+
+            // Get current window position
+            RECT rcWindow;
+            GetWindowRect(hwnd, &rcWindow);
+
+            // Move the window
+            SetWindowPos(hwnd, NULL,
+                rcWindow.left + dx,
+                rcWindow.top + dy,
+                0, 0,
+                SWP_NOSIZE | SWP_NOZORDER);
+
+            pProvider->_lastMousePos = currentPos;
+        }
+        return 0;
+    }
+
+    case WM_LBUTTONUP:
+    {
+        // End window drag
+        if (pProvider->_isDragging)
+        {
+            pProvider->_isDragging = false;
+            ReleaseCapture();
+        }
+        return 0;
+    }
+
+    case WM_PAINT:
+    {
+        PAINTSTRUCT ps;
+        HDC hdc = BeginPaint(hwnd, &ps);
+        pProvider->LoadAndDisplayImage();
+        EndPaint(hwnd, &ps);
+        return 0;
+    }
+
+    case WM_ERASEBKGND:
+        return 1; // Prevent flickering
+    }
+
+    return DefWindowProc(hwnd, msg, wParam, lParam);
 }
 
 // LogonUI calls this in order to give us a callback in case we need to notify it of anything.
